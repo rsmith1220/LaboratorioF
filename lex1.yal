@@ -9,11 +9,11 @@ let digit = ['0'-'9']
 let id = letter(letter|digit)*
 
 rule tokens = 
-    ws        { "WS" }
-  | id        { "ID" }               (* Cambie por una acción válida, que devuelva el token *)
-  | '+'       { "PLUS" }
-  | '*'       { "TIMES" }
-  | '('       { "LPAREN" }
-  | ')'       { "RPAREN" }
+    ws        { WS }
+  | id        { ID }               (* Cambie por una acción válida, que devuelva el token *)
+  | '+'       { PLUS }
+  | '*'       { TIMES }
+  | '('       { LPAREN }
+  | ')'       { RPAREN }
 
 (* Introducir cualquier trailer aqui *)
