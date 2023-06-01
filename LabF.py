@@ -2,6 +2,7 @@ import procesador
 import re
 import firstFollow
 import leftRight
+import draw
 archivo1='lex1.yalp' #YALP
 
 archivo2='lex1.yal'
@@ -96,11 +97,11 @@ if len(tokenList)== len(tokensYal):
     print("Estados")
     for i, estados in enumerate(estados):
         print(f'{i}: {estados}')
-        pass
+        
     print('\nTransiciones:')
     for transition in transiciones:
-        # print(transition)
-        pass
+        print(transition)
         
+    draw.automara(estados,transiciones)   
     
 

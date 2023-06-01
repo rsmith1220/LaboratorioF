@@ -12,6 +12,8 @@ def lectorLe(content):
                 reglas[current_production] = prodrules
                 prodrules = []
             current_production = line[:-1]
+        elif line.startswith("/*"):
+            pass
         elif line.endswith(';'):
             line = line[:-1]
             if line != "":
