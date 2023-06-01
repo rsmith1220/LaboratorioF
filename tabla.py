@@ -1,6 +1,4 @@
 import pandas as pd
-import pickle
-import firstFollow
 
 def generate_slr_tables(states, transitions, productions, follow_sets, non_terminals, terminals):
     start_symbol = list(productions.keys())[0]  # simbolo inicial
@@ -50,33 +48,4 @@ def generate_slr_tables(states, transitions, productions, follow_sets, non_termi
                 elif trans[1] in non_terminals:  # caso para go to
                     goto_table.loc[i, trans[1]] = trans[2]
     return action_table, goto_table, production_list, error_list
-terminals, no_terminals = firstFollow.get_terminales_no_terminales(
-    converted_productions)
-# Obtener las tablas de análisis SLR
-action_table, goto_table, production_list, error_list = generate_slr_tables(
-    states, transitions, converted_productions, follow, no_terminals, terminals)
-# Concatenamos las tablas para su impresion
-concatenated_table = pd.concat(
-    [action_table, goto_table], axis=1, keys=['ACTION', 'GOTO'])
-# remplazamos NaN con "-"
-concatenated_table = concatenated_table.fillna('-')
-# imprimimos la tabla
-print('\nTABLA DE PARSEO SLR')
-print(concatenated_table)
-if len(error_list) > 0:
-    print("\nInforme de Errores:")
-    for error in error_list:
-        print(error)
-else:
-    print("\nNo hay errores, se prosigue con la ejecución")
-# convertir objetos a bytes
-action_table_bytes = pickle.dumps(action_table)
-goto_table_bytes = pickle.dumps(goto_table)
-production_list_bytes = pickle.dumps(production_list)
-# guardar bytes en archivos binarios
-with open('action_table.pkl', 'wb') as f:
-    f.write(action_table_bytes)
-with open('goto_table.pkl', 'wb') as f:
-    f.write(goto_table_bytes)
-with open('production_list.pkl', 'wb') as f:
-    f.write(production_list_bytes)
+

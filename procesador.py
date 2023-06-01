@@ -34,3 +34,22 @@ def lectorLe(content):
             else:
                 prodrules.append(line)
     return reglas
+
+def tokensFunction(content):
+    tokens = []
+    lines = content.split('\n')
+    for line in lines:
+        if line.startswith("%token"):
+            line_tokens = line[len("%token"):].strip().split(' ')
+            tokens.extend(line_tokens)
+        if not line.startswith("%token") and not line.startswith("IGNORE") and not line.startswith("/*") and line.strip():
+            print("\nLos tokens no estan bien definidos.")
+            exit()
+    return tokens
+
+def yalp(content,tokens,producciones):
+    content = content
+    tokens_section, productions_section = tokens,producciones
+    tokens = tokensFunction(tokens_section)
+    productions = lectorLe(productions_section)
+    return tokens, productions

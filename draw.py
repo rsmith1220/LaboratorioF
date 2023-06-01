@@ -9,14 +9,14 @@ def automara(states, transitions):
         parte1 = []
         derivados = []
         for item in state:
-            if item.derivados:
+            if item.derived:
                 derivados.append(str(item))
             else:
                 parte1.append(str(item))
 
-        label = 'I ' + str(i) + '\n<---------------->\n'
+        label = 'I ' + str(i) + '\n______________________\n'
         label += '\n'.join(parte1) + \
-            '\n<---------------->\n' + '\n'.join(derivados)
+            '\n______________________\n' + '\n'.join(derivados)
 
         dot.node(str(i), label=label)
 

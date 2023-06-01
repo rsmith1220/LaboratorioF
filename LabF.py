@@ -3,15 +3,22 @@ import re
 import firstFollow
 import leftRight
 import draw
+import pickle
+import tabla
+import pandas as pd
 archivo1='lex1.yalp' #YALP
 
 archivo2='lex1.yal'
 
 inside_block_comment = False
 
+
+#YALP
 with open(archivo1,'r') as file:
     content=file.read()
 
+
+#YALEX
 with open(archivo2,'r') as file2:
     content2=file2.read()
 
@@ -58,12 +65,8 @@ for i in filtered_lines:
 
 
 
-productos = procesador.lectorLe(content)
+# productos = procesador.lectorLe(content)
 
-
-converted_productions = {}
-for key, value in productos.items():
-    converted_productions[key] = [rule.split() for rule in value]
 
 lineas = content2.split('\n')
 for i, line in enumerate(lineas):
@@ -78,6 +81,11 @@ if rule_tokens_index is not None:
         if match and match.group(1):  
             tokensYal.append(match.group(1))
   
+tokens, dictProductos=procesador.yalp(content,tokens,content)
+
+productsConve ={}
+for key,value in dictProductos.items():
+    productsConve[key]=[rule.split() for rule in value]
 
 print(tokenList)
 print(tokensYal)
@@ -90,10 +98,10 @@ def convertidor(productions_dict):
             setConvertido[key].append(rule.split())
     return setConvertido
 
-setConvertido = convertidor(productos)
+# setConvertido = convertidor(productos)
 
 if len(tokenList)== len(tokensYal):
-    estados, transiciones = leftRight.coleccion_canonica(setConvertido)
+    estados, transiciones = leftRight.coleccion_canonica(productsConve)
     print("Estados")
     for i, estados in enumerate(estados):
         print(f'{i}: {estados}')
@@ -101,7 +109,8 @@ if len(tokenList)== len(tokensYal):
     print('\nTransiciones:')
     for transition in transiciones:
         print(transition)
-        
+
+    estados, transiciones = leftRight.coleccion_canonica(productsConve)    
     draw.automara(estados,transiciones)   
     
     def convert_productions(productions):
@@ -110,7 +119,7 @@ if len(tokenList)== len(tokensYal):
             converted_productions[key] = [prod.split() for prod in value]
         return converted_productions
 
-    converted_prod = convert_productions(firstFollow.productions_dict)
+    converted_prod = convert_productions(dictProductos)
     first = firstFollow.primeros(converted_prod)
     follow = firstFollow.siguientes(converted_prod, first)
 
@@ -121,3 +130,38 @@ if len(tokenList)== len(tokensYal):
     print("\nConjuntos Siguientes:")
     for non_terminal, follow_set in follow.items():
         print(f"{non_terminal}: {follow_set}")
+
+
+
+
+
+terminals, no_terminals = firstFollow.get_terminales_no_terminales(productsConve)
+terminals = list(terminals)
+no_terminals = list(no_terminals)
+# Obtener las tablas de análisis SLR
+action_table, goto_table, production_list, error_list = tabla.generate_slr_tables(estados, transiciones, productsConve, follow, no_terminals, terminals)
+# Concatenamos las tablas para su impresion
+concatenated_table = pd.concat(
+    [action_table, goto_table], axis=1, keys=['ACTION', 'GOTO'])
+# remplazamos NaN con "-"
+concatenated_table = concatenated_table.fillna('-')
+# imprimimos la tabla
+print('\nTABLA DE PARSEO SLR')
+print(concatenated_table)
+if len(error_list) > 0:
+    print("\nInforme de Errores:")
+    for error in error_list:
+        print(error)
+else:
+    pass
+# convertir objetos a bytes
+action_table_bytes = pickle.dumps(action_table)
+goto_table_bytes = pickle.dumps(goto_table)
+production_list_bytes = pickle.dumps(production_list)
+# guardar bytes en archivos binarios
+with open('action_table.txt', 'wb') as f:
+    f.write(action_table_bytes)
+with open('goto_table.txt', 'wb') as f:
+    f.write(goto_table_bytes)
+with open('production_list.txt', 'wb') as f:
+    f.write(production_list_bytes)
