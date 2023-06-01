@@ -1,5 +1,5 @@
-/* Configuración del parser para gramática No.1 */
-/* Sigue la gramática SLR: */
+/* Configuracion del parser para gramatica No.1 */
+/* Sigue la gramatica SLR: */
 /* E → E + T | T */
 /* T → T ∗ F | F */
 /* F → ( E ) | id */
