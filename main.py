@@ -50,7 +50,7 @@ for line in lineas:
             if '/*' in line or '(*' in line:
                 inside_block_comment = True  # found the start of a comment
     else:
-        #si no se esta en un comentario, continuar
+        #si no se esta en un comentario, se agrega a la lista
         filtered_lines.append(line)
 
 for i in filtered_lines:
@@ -61,11 +61,6 @@ for i in filtered_lines:
         pass
     elif not i.startswith('IGNORE') and not i.startswith('/*'):
         print("error a la  hora de definir tokens ")
-
-
-
-
-# productos = procesador.lectorLe(content)
 
 
 lineas = content2.split('\n')
@@ -90,15 +85,6 @@ for key,value in dictProductos.items():
 print(tokenList)
 print(tokensYal)
 
-def convertidor(productions_dict):
-    setConvertido = {}
-    for key in productions_dict:
-        setConvertido[key] = []
-        for rule in productions_dict[key]:
-            setConvertido[key].append(rule.split())
-    return setConvertido
-
-# setConvertido = convertidor(productos)
 
 if len(tokenList)== len(tokensYal):
     estados, transiciones = leftRight.coleccion_canonica(productsConve)
@@ -108,60 +94,43 @@ if len(tokenList)== len(tokensYal):
         
     print('\nTransiciones:')
     for transition in transiciones:
-        print(transition)
+        print(f'{str(transition[0])} - \'{transition[1]}\' to {str(transition[2])}')
+        
 
     estados, transiciones = leftRight.coleccion_canonica(productsConve)    
     draw.automara(estados,transiciones)   
-    
-    def convert_productions(productions):
-        converted_productions = {}
-        for key, value in productions.items():
-            converted_productions[key] = [prod.split() for prod in value]
-        return converted_productions
 
-    converted_prod = convert_productions(dictProductos)
+    converted_prod = procesador.convertir(dictProductos)
     first = firstFollow.primeros(converted_prod)
     follow = firstFollow.siguientes(converted_prod, first)
 
-    print("\nConjuntos Primeros:")
-    for non_terminal, first_set in first.items():
-        print(f"{non_terminal}: {first_set}")
+    print("\n-----Firsts-----")
+    for noTermilal, firSet in first.items():
+        print(f"{noTermilal}: {firSet}")
 
-    print("\nConjuntos Siguientes:")
-    for non_terminal, follow_set in follow.items():
-        print(f"{non_terminal}: {follow_set}")
-
-
+    print("\n-----Follow-----")
+    for noTermilal, follows in follow.items():
+        print(f"{noTermilal}: {follows}")
 
 
-
+#Convertir los sets en listas para que pandas entienda
 terminals, no_terminals = firstFollow.get_terminales_no_terminales(productsConve)
 terminals = list(terminals)
 no_terminals = list(no_terminals)
-# Obtener las tablas de análisis SLR
+
+
 action_table, goto_table, production_list, error_list = tabla.generate_slr_tables(estados, transiciones, productsConve, follow, no_terminals, terminals)
-# Concatenamos las tablas para su impresion
-concatenated_table = pd.concat(
-    [action_table, goto_table], axis=1, keys=['ACTION', 'GOTO'])
-# remplazamos NaN con "-"
+
+concatenated_table = pd.concat([action_table, goto_table], axis=1, keys=['Accion', 'Goto'])
+
 concatenated_table = concatenated_table.fillna('-')
-# imprimimos la tabla
-print('\nTABLA DE PARSEO SLR')
-print(concatenated_table)
+
+#Tabla y errores
+print('\nTabla SLR')
+print(concatenated_table,'\t')
 if len(error_list) > 0:
-    print("\nInforme de Errores:")
+    print("\nErrores encontrados:")
     for error in error_list:
         print(error)
 else:
     pass
-# convertir objetos a bytes
-action_table_bytes = pickle.dumps(action_table)
-goto_table_bytes = pickle.dumps(goto_table)
-production_list_bytes = pickle.dumps(production_list)
-# guardar bytes en archivos binarios
-with open('action_table.txt', 'wb') as f:
-    f.write(action_table_bytes)
-with open('goto_table.txt', 'wb') as f:
-    f.write(goto_table_bytes)
-with open('production_list.txt', 'wb') as f:
-    f.write(production_list_bytes)

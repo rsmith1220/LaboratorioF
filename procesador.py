@@ -39,17 +39,24 @@ def tokensFunction(content):
     tokens = []
     lines = content.split('\n')
     for line in lines:
-        if line.startswith("%token"):
-            line_tokens = line[len("%token"):].strip().split(' ')
-            tokens.extend(line_tokens)
-        if not line.startswith("%token") and not line.startswith("IGNORE") and not line.startswith("/*") and line.strip():
-            print("\nLos tokens no estan bien definidos.")
+        if line[:6] == "%token":
+            line_tokens = line[7:].strip().split(' ')
+            tokens += line_tokens
+        if line[:6] != "%token" and line[:6] != "IGNORE" and line[:2] != "/*" and line.strip():
+            print("\nThe tokens are not properly defined.")
             exit()
     return tokens
 
+
 def yalp(content,tokens,producciones):
     content = content
-    tokens_section, productions_section = tokens,producciones
-    tokens = tokensFunction(tokens_section)
-    productions = lectorLe(productions_section)
+    seccTokens, seccProd = tokens,producciones
+    tokens = tokensFunction(seccTokens)
+    productions = lectorLe(seccProd)
     return tokens, productions
+
+def convertir(productions):
+        converted_productions = {}
+        for key, value in productions.items():
+            converted_productions[key] = [prod.split() for prod in value]
+        return converted_productions
