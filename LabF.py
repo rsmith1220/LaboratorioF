@@ -104,4 +104,20 @@ if len(tokenList)== len(tokensYal):
         
     draw.automara(estados,transiciones)   
     
+    def convert_productions(productions):
+        converted_productions = {}
+        for key, value in productions.items():
+            converted_productions[key] = [prod.split() for prod in value]
+        return converted_productions
 
+    converted_prod = convert_productions(firstFollow.productions_dict)
+    first = firstFollow.primeros(converted_prod)
+    follow = firstFollow.siguientes(converted_prod, first)
+
+    print("\nConjuntos Primeros:")
+    for non_terminal, first_set in first.items():
+        print(f"{non_terminal}: {first_set}")
+
+    print("\nConjuntos Siguientes:")
+    for non_terminal, follow_set in follow.items():
+        print(f"{non_terminal}: {follow_set}")
