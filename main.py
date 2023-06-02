@@ -52,6 +52,12 @@ for line in lineas:
         #si no se esta en un comentario, se agrega a la lista
         filtered_lines.append(line)
 
+if inside_block_comment:
+    print("No se cerro un comentario")
+    exit()
+else:
+    pass
+
 for i in filtered_lines:
     if i.startswith("%token"):
         line_tokens = i[len("%token"):].strip().split(' ')
@@ -114,28 +120,30 @@ if len(tokenList)== len(tokensYal):
         print(f"{noTermilal}: {follows}")
 
 
-#Convertir los sets en listas para que pandas entienda
-terminals, no_terminals = firstFollow.terminalesyno(productsConve)
-terminals = list(terminals)
-no_terminals = list(no_terminals)
+    #Convertir los sets en listas para que pandas entienda
+    terminals, no_terminals = firstFollow.terminalesyno(productsConve)
+    terminals = list(terminals)
+    no_terminals = list(no_terminals)
 
 
-action_table, goto_table, production_list, error_list = tabla.generate_slr_tables(estados, transiciones, productsConve, follow, no_terminals, terminals)
+    action_table, goto_table, production_list, error_list = tabla.generate_slr_tables(estados, transiciones, productsConve, follow, no_terminals, terminals)
 
-# concatenated_table = pd.concat([action_table, goto_table], axis=1, keys=['Accion', 'Goto'])
-action_df = pd.DataFrame(action_table)
-goto_df = pd.DataFrame(goto_table)
-concatenated_table = pd.concat([action_df, goto_df], axis=1, keys=['Accion', 'Goto'])
+    # concatenated_table = pd.concat([action_table, goto_table], axis=1, keys=['Accion', 'Goto'])
+    action_df = pd.DataFrame(action_table)
+    goto_df = pd.DataFrame(goto_table)
+    concatenated_table = pd.concat([action_df, goto_df], axis=1, keys=['Accion', 'Goto'])
 
 
-concatenated_table = concatenated_table.fillna('-')
+    concatenated_table = concatenated_table.fillna('-')
 
-#Tabla y errores
-print('\nTabla SLR')
-print(concatenated_table,'\t')
-if len(error_list) > 0:
-    print("\nErrores encontrados:")
-    for error in error_list:
-        print(error)
+    #Tabla y errores
+    print('\nTabla SLR')
+    print(concatenated_table,'\t')
+    if len(error_list) > 0:
+        print("\nErrores encontrados:")
+        for error in error_list:
+            print(error)
+    else:
+        pass
 else:
-    pass
+    print("Los tokens no estan correctos")   
