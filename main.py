@@ -3,7 +3,6 @@ import re
 import firstFollow
 import leftRight
 import draw
-import pickle
 import tabla
 import pandas as pd
 archivo1='lex1.yalp' #YALP
@@ -87,7 +86,7 @@ print(tokensYal)
 
 
 if len(tokenList)== len(tokensYal):
-    estados, transiciones = leftRight.coleccion_canonica(productsConve)
+    estados, transiciones = leftRight.CC(productsConve)
     print("Estados")
     for i, estados in enumerate(estados):
         print(f'{i}: {estados}')
@@ -97,12 +96,12 @@ if len(tokenList)== len(tokensYal):
         print(f'{str(transition[0])} - \'{transition[1]}\' to {str(transition[2])}')
         
 
-    estados, transiciones = leftRight.coleccion_canonica(productsConve)    
+    estados, transiciones = leftRight.CC(productsConve)    
     draw.automara(estados,transiciones)   
 
     converted_prod = procesador.convertir(dictProductos)
-    first = firstFollow.primeros(converted_prod)
-    follow = firstFollow.siguientes(converted_prod, first)
+    first = firstFollow.firsts(converted_prod)
+    follow = firstFollow.follows(converted_prod, first)
     
 
 
@@ -116,7 +115,7 @@ if len(tokenList)== len(tokensYal):
 
 
 #Convertir los sets en listas para que pandas entienda
-terminals, no_terminals = firstFollow.get_terminales_no_terminales(productsConve)
+terminals, no_terminals = firstFollow.terminalesyno(productsConve)
 terminals = list(terminals)
 no_terminals = list(no_terminals)
 

@@ -1,4 +1,4 @@
-class LR0Item:
+class AutoItem:
     def __init__(self, producciones, position, derived=False):
         self.producciones = (producciones[0], tuple(producciones[1]))
         self.position = position
@@ -17,7 +17,7 @@ class LR0Item:
         return hash((self.producciones, self.position))
 
 
-def closure(items, produccioness):
+def cerra(items, produccioness):
     new_items = set(items)
     changed = True
     while changed:
@@ -26,7 +26,7 @@ def closure(items, produccioness):
             if item.position < len(item.producciones[1]) and item.producciones[1][item.position] in produccioness:
                 non_terminal = item.producciones[1][item.position]
                 for producciones in produccioness[non_terminal]:
-                    new_item = LR0Item((non_terminal, producciones), 0, True)
+                    new_item = AutoItem((non_terminal, producciones), 0, True)
                     if new_item not in new_items:
                         new_items.add(new_item)
                         changed = True
@@ -37,14 +37,14 @@ def goto(items, symbol, producciones):
     next_items = set()
     for item in items:
         if item.position < len(item.producciones[1]) and item.producciones[1][item.position] == symbol:
-            next_items.add(LR0Item(item.producciones, item.position + 1))
-    return closure(next_items, producciones)
+            next_items.add(AutoItem(item.producciones, item.position + 1))
+    return cerra(next_items, producciones)
 
 
-def coleccion_canonica(producciones):
+def CC(producciones):
     initial_key = list(producciones.keys())[0]
-    initial_item = LR0Item((initial_key + '\'', [initial_key]), 0)
-    initial_state = closure({initial_item}, producciones)
+    initial_item = AutoItem((initial_key + '\'', [initial_key]), 0)
+    initial_state = cerra({initial_item}, producciones)
     
     states = [initial_state]
     transitions = []

@@ -1,4 +1,4 @@
-def get_terminales_no_terminales(productions):
+def terminalesyno(productions):
     non_terminals = set(productions.keys())
     symbols = {symbol for production in productions.values() for sequence in production for symbol in sequence}
     terminals = symbols - non_terminals
@@ -7,8 +7,8 @@ def get_terminales_no_terminales(productions):
 
 
 
-def primeros(productions):
-    non_terminals, terminals = get_terminales_no_terminales(productions)
+def firsts(productions):
+    non_terminals, terminals = terminalesyno(productions)
     first = {nt: set() for nt in non_terminals}
     visited = {nt: False for nt in non_terminals}
 
@@ -36,8 +36,8 @@ def primeros(productions):
 
 
 
-def siguientes(productions, primeros):
-    _, non_terminals = get_terminales_no_terminales(productions)
+def follows(productions, firsts):
+    _, non_terminals = terminalesyno(productions)
     follow = {non_terminal: set() for non_terminal in non_terminals}
     follow[next(iter(non_terminals))].add('$')  # start symbol
 
@@ -52,7 +52,7 @@ def siguientes(productions, primeros):
                             next_symbol = production[i+1]
                             # If the next symbol is a non terminal, then add its first to the current non terminal's follow
                             if next_symbol in non_terminals:
-                                follow[production[i]] = follow[production[i]].union(primeros[next_symbol] - {None})
+                                follow[production[i]] = follow[production[i]].union(firsts[next_symbol] - {None})
                             else:
                                 # If the next symbol is a terminal then add it to the current non terminal's follow
                                 follow[production[i]].add(next_symbol)
