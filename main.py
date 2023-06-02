@@ -5,11 +5,12 @@ import leftRight
 import draw
 import tabla
 import pandas as pd
-archivo1='lex1.yalp' #YALP
+archivo1='par1.yalp' #YALP
 
-archivo2='lex1.yal'
+archivo2='par1.yal'
 
 inside_block_comment = False
+noentra=['@','/','!','&','^','%','$','#','[]']
 
 
 #YALP
@@ -57,6 +58,15 @@ if inside_block_comment:
     exit()
 else:
     pass
+
+for char in noentra:
+    for i in filtered_lines:
+        if char in i:
+            print("Hay caracteres sin reconocer en la linea",i)
+            exit()
+        else:
+            pass
+
 
 for i in filtered_lines:
     if i.startswith("%token"):
