@@ -1,14 +1,10 @@
 def get_terminales_no_terminales(productions):
     non_terminals = set(productions.keys())
-    terminals = set()
-
-    for non_terminal in non_terminals:
-        for production in productions[non_terminal]:
-            for symbol in production:
-                if symbol not in non_terminals:
-                    terminals.add(symbol)
+    symbols = {symbol for production in productions.values() for sequence in production for symbol in sequence}
+    terminals = symbols - non_terminals
 
     return terminals, non_terminals
+
 
 
 def primeros(productions):
@@ -17,25 +13,20 @@ def primeros(productions):
     visited = {nt: False for nt in non_terminals}
 
     def compute_first(symbol):
-        if symbol in terminals:  # base case: symbol is a terminal
+        if symbol in terminals:
             return {symbol}
-        if symbol not in non_terminals:  # added this check
-            return set()
-        if visited[symbol]:  # base case: already computed
-            return first[symbol]
-        visited[symbol] = True  # mark as visited
-        for production in productions[symbol]:
-            for i, prod_symbol in enumerate(production):
-                first_set = compute_first(prod_symbol)
-                if None in first_set and i < len(production) - 1:
-                    first_set = first_set - {None}
-                first[symbol] = first[symbol].union(first_set)
-                if None not in first_set:
-                    break
-            else:
-                first[symbol].add(None)
-
+        elif first[symbol] is None:
+            first[symbol] = set()
+            if symbol in productions:  # Add this line
+                for production in productions[symbol]:
+                    for symbol_in_prod in production:
+                        first[symbol].update(compute_first(symbol_in_prod))
+                        if None not in first[symbol_in_prod]:
+                            break
+                    else:
+                        first[symbol].add(None)
         return first[symbol]
+
 
     # Compute FIRST sets for all non-terminals
     for non_terminal in non_terminals:
