@@ -103,6 +103,8 @@ if len(tokenList)== len(tokensYal):
     converted_prod = procesador.convertir(dictProductos)
     first = firstFollow.primeros(converted_prod)
     follow = firstFollow.siguientes(converted_prod, first)
+    
+
 
     print("\n-----Firsts-----")
     for noTermilal, firSet in first.items():
@@ -121,7 +123,11 @@ no_terminals = list(no_terminals)
 
 action_table, goto_table, production_list, error_list = tabla.generate_slr_tables(estados, transiciones, productsConve, follow, no_terminals, terminals)
 
-concatenated_table = pd.concat([action_table, goto_table], axis=1, keys=['Accion', 'Goto'])
+# concatenated_table = pd.concat([action_table, goto_table], axis=1, keys=['Accion', 'Goto'])
+action_df = pd.DataFrame(action_table)
+goto_df = pd.DataFrame(goto_table)
+concatenated_table = pd.concat([action_df, goto_df], axis=1, keys=['Accion', 'Goto'])
+
 
 concatenated_table = concatenated_table.fillna('-')
 
