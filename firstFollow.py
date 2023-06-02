@@ -39,34 +39,29 @@ def primeros(productions):
 def siguientes(productions, primeros):
     _, non_terminals = get_terminales_no_terminales(productions)
     follow = {non_terminal: set() for non_terminal in non_terminals}
-    follow[next(iter(non_terminals))].add('$')
+    follow[next(iter(non_terminals))].add('$')  # start symbol
 
-    changed = True
-    while changed:
-        changed = False
+    while True:
+        # Make a deep copy of the follow sets to check if any changes are made in the loop
+        old_follow = {key: val.copy() for key, val in follow.items()}
         for non_terminal in non_terminals:
             for production in productions[non_terminal]:
-                for i, symbol in enumerate(production):
-                    if symbol in non_terminals:
-                        # Si no es el último símbolo de la producción, añadir el conjunto first del siguiente símbolo
-                        if i + 1 < len(production):
-                            next_symbol = production[i + 1]
+                for i in range(len(production)):
+                    if production[i] in non_terminals:
+                        if i+1 < len(production):
+                            next_symbol = production[i+1]
+                            # If the next symbol is a non terminal, then add its first to the current non terminal's follow
                             if next_symbol in non_terminals:
-                                added = len(follow[symbol])
-                                follow[symbol].update(
-                                    primeros[next_symbol] - {None})
-                                if len(follow[symbol]) != added:
-                                    changed = True
-                            # Si el siguiente símbolo es un terminal, añadirlo al conjunto follow
+                                follow[production[i]] = follow[production[i]].union(primeros[next_symbol] - {None})
                             else:
-                                if next_symbol not in follow[symbol]:
-                                    follow[symbol].add(next_symbol)
-                                    changed = True
-                        # Si es el último símbolo de la producción, añadir el conjunto follow del no terminal actual
+                                # If the next symbol is a terminal then add it to the current non terminal's follow
+                                follow[production[i]].add(next_symbol)
                         else:
-                            added = len(follow[symbol])
-                            follow[symbol].update(follow[non_terminal])
-                            if len(follow[symbol]) != added:
-                                changed = True
+                            # If the current non terminal is the last symbol then add the follow of the LHS non terminal to its follow
+                            follow[production[i]] = follow[production[i]].union(follow[non_terminal])
+        
+        # If no changes were made in the last loop, then stop
+        if old_follow == follow:
+            break
 
     return follow
