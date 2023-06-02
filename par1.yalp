@@ -1,5 +1,4 @@
 /* Configuracion del parser para gramatica No.1 */
-/* Configuracion del parser para gramatica No.1 */
 /* Sigue la gramatica SLR: */
 /* E → E + T | T */
 /* T → T ∗ F | F */
@@ -8,7 +7,7 @@
 %token ID
 %token PLUS
 %token TIMES
-%token LPAREN RPAREN @@@
+%token LPAREN RPAREN
 %token WS 
 IGNORE WS 
 

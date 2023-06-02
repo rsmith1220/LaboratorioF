@@ -10,7 +10,7 @@ archivo1='par1.yalp' #YALP
 archivo2='par1.yal'
 
 inside_block_comment = False
-noentra=['@','/','!','&','^','%','$','#','[]']
+noentra=['@','/','!','&','^','$','#','[]']
 
 
 #YALP
@@ -49,6 +49,9 @@ for line in lineas:
             #revisar si comienza el bloque de comentario
             if '/*' in line or '(*' in line:
                 inside_block_comment = True  # found the start of a comment
+                if '*/' in line and inside_block_comment or '*)' in line and inside_block_comment:
+                    inside_block_comment=False
+                
     else:
         #si no se esta en un comentario, se agrega a la lista
         filtered_lines.append(line)
@@ -63,6 +66,7 @@ for char in noentra:
     for i in filtered_lines:
         if char in i:
             print("Hay caracteres sin reconocer en la linea",i)
+            print(char)
             exit()
         else:
             pass
